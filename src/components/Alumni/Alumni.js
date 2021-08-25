@@ -7,9 +7,12 @@ import Logout from '../Logout/Logout';
 function Alumni() {
     const [data, setdata] = useState(null)
     useEffect(() => {
-        axios.get('https://alumnibook.herokuapp.com/getList').then((res) => {
+        async function fetchData(){
+        await axios.get('https://alumnibook.herokuapp.com/getList').then((res) => {
             setdata(res.data)
         })
+    }
+    fetchData();
     },[data])
     return (
         <div className="Alumni">
@@ -31,8 +34,7 @@ function Alumni() {
 
                     <th style={{border:"1px black solid", margin:"2px", width:"200px"}}>slot</th>
                     <th style={{border:"1px black solid", margin:"2px", width:"200px"}}>
-                        {/* {!pending ? <button>select</button>:null}
-                        <button>reject</button> */}
+                        
                         choice
                     </th>
                 </tr>

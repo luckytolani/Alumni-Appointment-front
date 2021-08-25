@@ -18,7 +18,7 @@ function Appointment(props) {
 
                         <td style={{ border: "1px black solid", margin: "1px", width: "200px" }}>{props.slot}</td>
                         <td style={{ border: "1px black solid", margin: "1px", width: "200px" }}>
-                            {props.pending ? <button
+                            {pending ? <button
                                 style={{ backgroundColor: "red" }}
                                 onClick={async () => {
                                     await axios.patch(`https://alumnibook.herokuapp.com/accept/${props.id}`).then((res) => {
@@ -30,7 +30,6 @@ function Appointment(props) {
                             <button onClick={async () => {
                                 await axios.delete(`https://alumnibook.herokuapp.com/deleteapp/${props.id}`).then((res) => {
                                     alert("deleted successfully")
-                                    window.location.href='/'
                                 })
                             }}>reject</button>
                         </td>

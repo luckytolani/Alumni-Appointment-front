@@ -8,36 +8,41 @@ import Logout from '../Logout/Logout';
 import Appointment from '../Appointment/Appointment';
 
 function Student(props) {
-  // const [user, setuser] = useState(props.data);
   const [data, setdata] = useState(null);
-  // const pending = false
   const [startDate, setStartDate] = useState(new Date());
   const [slot, setslot] = useState(null)
   console.log(props.data.user + "  saved by me");
   const [maxapp, setmaxapp] = useState(false);
   const [previous, setprevious] = useState(false);
-  useEffect(async () => {
-    await axios.get(`https://alumnibook.herokuapp.com/checkstudent/${props.data.user}`).then((res) => {
-      if (res.data) {
-        setmaxapp(true)
-      }
-    })
+  useEffect( () => {
+    async function fetchData(){
+      await axios.get(`https://alumnibook.herokuapp.com/checkstudent/${props.data.user}`).then((res) => {
+       if (res.data) {
+         setmaxapp(true)
+       }
+     })
+    }
+    fetchData();
   }, [props.data.user, previous])
-  useEffect(async () => {
-    await axios.get("https://alumnibook.herokuapp.com/checkavailable").then((res) => {
+  useEffect( () => {
+    async function fetchData(){
+     await axios.get("https://alumnibook.herokuapp.com/checkavailable").then((res) => {
       if (res.data.length > 0) {
         setprevious(true)
       }
     })
-
-
+  }
+  fetchData();
   }, [data,previous,props.data.user])
 
 
-  useEffect(async () => {
-    await axios.get(`https://alumnibook.herokuapp.com/getList/${props.data.user}`).then((res) => {
+  useEffect( () => {
+    async function fetchData(){
+     await axios.get(`https://alumnibook.herokuapp.com/getList/${props.data.user}`).then((res) => {
       setdata(res.data)
     })
+  }
+  fetchData();
   }, [data, previous, props.data.user])
 
   const options = [
@@ -119,8 +124,6 @@ function Student(props) {
 
             <th style={{ border: "1px black solid", margin: "2px", width: "200px" }}>slot</th>
             <th style={{ border: "1px black solid", margin: "2px", width: "200px" }}>
-              {/* {!pending ? <button>select</button>:null}
-                        <button>reject</button> */}
               choice
             </th>
           </tr>
