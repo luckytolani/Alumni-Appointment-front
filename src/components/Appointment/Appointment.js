@@ -1,9 +1,9 @@
 import axios from 'axios'
-import React, { useState } from 'react'
+import React from 'react'
 
 
 function Appointment(props) {
-    const [pending, setpending] = useState(props.pending)
+    const pending = props.pending
     var date = new Date(props.date)
     date.setMonth(date.getMonth() + 1)
     var temp = date.getDate() + " / " + date.getMonth() + " / " + date.getFullYear()
@@ -22,14 +22,15 @@ function Appointment(props) {
                                 style={{ backgroundColor: "red" }}
                                 onClick={async () => {
                                     await axios.patch(`https://alumnibook.herokuapp.com/accept/${props.id}`).then((res) => {
+                                        window.location.reload()
                                         alert("Accepted Successfully")
-                                        setpending(false)
                                     })
                                 }}
                             >Accept</button> : null}
                             <button onClick={async () => {
                                 await axios.delete(`https://alumnibook.herokuapp.com/deleteapp/${props.id}`).then((res) => {
-                                    alert("deleted successfully")
+                                    window.location.reload()
+                                    alert("Rejected successfully")
                                 })
                             }}>reject</button>
                         </td>

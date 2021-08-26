@@ -1,6 +1,7 @@
 export default function Logout(){
     function click(){
-        window.location.href = "/";
+        sessionStorage.clear();
+        window.location.href = "/#";
     }
     return(
         <div>

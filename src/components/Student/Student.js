@@ -6,76 +6,106 @@ import "react-datepicker/dist/react-datepicker.css";
 import axios from "axios";
 import Logout from '../Logout/Logout';
 import Appointment from '../Appointment/Appointment';
+import Preloader from '../Preloader/Preloader'
 
-function Student(props) {
-  const [data, setdata] = useState(null);
+//student Dashboard page
+
+function Student() {
+  const uservalue = sessionStorage.getItem('value');
+  const [loading,setloading] = useState(false)
+  const [data , setdata] = useState(null)
   const [startDate, setStartDate] = useState(new Date());
   const [slot, setslot] = useState(null)
-  console.log(props.data.user + "  saved by me");
   const [maxapp, setmaxapp] = useState(false);
   const [previous, setprevious] = useState(false);
-  useEffect( () => {
-    async function fetchData(){
-      await axios.get(`https://alumnibook.herokuapp.com/checkstudent/${props.data.user}`).then((res) => {
-       if (res.data) {
-         setmaxapp(true)
-       }
-     })
+
+  useEffect(() => {
+    if(!sessionStorage.getItem('value')){
+      window.location.href = '/#'
+    }
+  }, [uservalue])
+
+  //checking that user cannot book more than two appointments
+  useEffect(() => {
+    async function fetchData() {
+      await axios.get(`https://alumnibook.herokuapp.com/checkstudent/${uservalue}`).then((res) => {
+        if (res.data) {
+          setmaxapp(true)
+        }
+      })
     }
     fetchData();
-  }, [props.data.user, previous])
-  useEffect( () => {
-    async function fetchData(){
-     await axios.get("https://alumnibook.herokuapp.com/checkavailable").then((res) => {
-      if (res.data.length > 0) {
-        setprevious(true)
-      }
-    })
-  }
-  fetchData();
-  }, [data,previous,props.data.user])
+  }, [uservalue, previous])
 
 
-  useEffect( () => {
-    async function fetchData(){
-     await axios.get(`https://alumnibook.herokuapp.com/getList/${props.data.user}`).then((res) => {
-      setdata(res.data)
-    })
-  }
-  fetchData();
-  }, [data, previous, props.data.user])
+  //checking that alumni has checked previous appointment or not if not then no one can book
+  useEffect(() => {
+    async function fetchData() {
+      await axios.get("https://alumnibook.herokuapp.com/checkavailable").then((res) => {
+        if (res.data.length > 0) {
+          setprevious(true)
+        }
+      })
+    }
+    fetchData();
+  }, [data, previous, uservalue])
 
+
+  //get list of previous appointments of particular user
+
+  useEffect(() => {
+    async function fetchData() {
+      await axios.get(`https://alumnibook.herokuapp.com/getList/${uservalue}`).then((res) => {
+        setdata(res.data)
+      })
+    }
+    fetchData();
+  }, [data, previous, uservalue])
+  //Definig slots and their timings
   const options = [
     { value: 1, label: '1 pm - 2 pm' },
     { value: 2, label: '4 pm - 5 pm' },
     { value: 3, label: '6 pm to 7 pm' }
   ]
+
+  //logic for allowance of booking to user only after 7 days of current date
+
   var date = new Date();
   date.setDate(date.getDate() + 7)
 
   async function click() {
+    setloading(true)
     if (startDate < date) {
+      setloading(false)
       alert("you can only book after 7 days from now")
     }
     else if (!slot) {
+      setloading(false)
       alert("select slot")
     }
     else {
+      //setting same time of booking for the ease of comparison
       startDate.setHours(0)
       startDate.setMinutes(0)
       startDate.setSeconds(0)
       startDate.setMilliseconds(0)
-      console.log(startDate);
       let data = {
-        user: props.data.user,
+        user: uservalue,
         slot: slot,
         date: startDate
       }
+
+      //API call checks that slot on particular date is booked or not 
+
       await axios.get(`https://alumnibook.herokuapp.com/checkslot/${startDate}/${slot}`).then(async (res) => {
-        console.log(res.data + "luckytolani");
-        alert("no slot available on particular date try different")
+        setloading(false)
+        alert("no slot available on particular date try different")          //return true means slot is not available
 
       }).catch(async () => {
+
+        //booking slot logic after getting confirmation that slot is free, this logic is working in a opposite direction, as we are catching error from backend which tells
+        //that slot is available
+
         await axios({
           method: "post",
           url: "https://alumnibook.herokuapp.com/appointuser",
@@ -86,37 +116,49 @@ function Student(props) {
         })
           .then(async (res) => {
             setprevious(true)
+            setloading(false)
             alert("Congratulations Slot Booked")
           })
           .catch((err) => {
-            alert("Error occured" + err);
+            setloading(false)
+            alert("Slot cant booked some error");
 
           });
       })
     }
   }
   return (
-    <div className="Student" style={{width:"70%", marginLeft:"auto", marginRight:"auto"}} >
+    <div className="Student" style={{ width: "70%", marginLeft: "auto", marginRight: "auto" }} >
+      {loading?<Preloader/>:null}
       <h2>Book Appointment</h2>
-      <h2>Welcome <strong style={{ color: "red" }}>{props.data.user}</strong></h2>
-      {/* <h1>Welcome {props.data._id}</h1> */}
+      <h2>Welcome <strong style={{ color: "red" }}>{uservalue}</strong></h2>
       <Logout></Logout>
       <div>
+
+        {/* used datepicker component for taking appointment date */}
+
         <label>Pick the Date for Appointment</label>
-        <DatePicker  selected={startDate} onChange={(date) => setStartDate(date)} />
+
+        <DatePicker selected={startDate} onChange={(date) => setStartDate(date)} />
       </div>
       <div>
         <label>Pick the Slot</label>
         <Select options={options} onChange={(e) => { setslot(e.value) }} />
       </div>
+
+      {/* if alumni has not seen previous booking no one can book appointment */}
+      
       {!previous ? null : <p>Note :-  Not allowed because Alumni has not seen <strong style={{ color: "red" }}>Previous Appointment</strong></p>}
+      
+      {/* showing message for maximum booking */}
+
       {!maxapp ? null : <p>Note :-  Not allowed because maximum Booking  allowed per user is <strong style={{ color: "red" }}>2</strong></p>}
       <button disabled={(maxapp || previous)} style={{ width: "200px", height: "100%" }} onClick={click}>Book Appointment</button>
       <center>
         <h6 style={{ color: "red" }}>
           Slot 1 =  <strong>1pm - 2pm</strong> || Slot 2 =  <strong>4pm - 5pm</strong> || Slot 3 =  <strong>6pm - 7pm</strong>
         </h6>
-        <h4>Accepted Slots For {props.data.user}</h4>
+        <h4>Accepted Slots For {uservalue}</h4>
         <table style={{ border: "1px black solid" }}>
           <tr>
             <th style={{ border: "1px black solid", margin: "2px", width: "200px" }}>user</th>
@@ -139,6 +181,7 @@ function Student(props) {
         );
       }) : null}
     </div>
+    // </Link>
   );
 }
 

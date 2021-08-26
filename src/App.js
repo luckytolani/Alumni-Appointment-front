@@ -1,12 +1,18 @@
 import './App.css';
-// import Student  from './components/Student/Student';
-// import Alumni from './components/Alumni/Alumni';
-// import Appointment from './components/Appointment/Appointment'
-import LoginPage from './components/Login/LoginPage';
+import LoginPage from './components/Login/LoginPage'
+import { Route, Switch } from "react-router-dom";
+import Student from './components/Student/Student';
+import Alumni from './components/Alumni/Alumni';
 
 function App() {
   return (
-    <LoginPage/>
+    <Switch>
+      <Route exact path="/">
+       <LoginPage/>
+      </Route>
+      <Route path="/student" component={Student} />
+      <Route path="/alumni" component={Alumni} />
+    </Switch>
   );
 }
 

@@ -1,15 +1,14 @@
 import { useState } from 'react'
 import axios from 'axios'
-import Student from '../Student/Student'
-import Alumni from '../Alumni/Alumni'
 import './LoginPage.css'
+import Preloader from '../Preloader/Preloader'
+
 export default function LoginPage() {
     const [username, setusername] = useState(null)
     const [password, setpassword] = useState(null)
-    const [user, setuser] = useState(null)
-    const [log, setlog] = useState(false)
-    const [alumni, setalumni] = useState(false)
+    const [loading, setloading] = useState(false)
     async function handleClick(e) {
+        setloading(true)
         e.preventDefault()
         let data = {
             user: username,
@@ -23,25 +22,27 @@ export default function LoginPage() {
                 "Content-Type": "application/json",
             },
         })
-            .then(async (res) => {
-                setlog(true)
-                setuser(res.data)
-                sessionStorage.setItem('key', res.data)
+            .then((res) => {
+                setloading(false)
+                sessionStorage.setItem('value', res.data.user);
+
+                //if user is alumni render alumni dashboard otherwise student dashboard  through conditional rendering
+
                 if (res.data.user === 'alumni') {
-                    setalumni(true)
+                    window.location.href = "/#/alumni"
                 }
-                console.log(res.data);
+                else {
+                    window.location.href = "/#/student"
+                }
             })
             .catch((err) => {
-                alert("Error occured" + err);
-
+                setloading(false)
+                alert("username or password not match");
             });
-        console.log(username);
-        console.log(password);
     }
     return (
-        <div style={{textAlign:"center"}}>
-            {!log ? <div> 
+         <div style={{ textAlign: "center" }}>
+            { loading?<Preloader/>:<div>
                 <h1>Welcome to Alumni Appointment App</h1>
                 <h1>Login Page</h1>
                 <form>
@@ -58,8 +59,8 @@ export default function LoginPage() {
 
                         <button type="submit" onClick={handleClick}>Login</button>
                     </div>
-                </form></div> : !alumni ? <Student data={user?user:{}} /> : <Alumni />}
-
+                </form></div>
+}
         </div>
     )
 }
