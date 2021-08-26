@@ -181,7 +181,6 @@ function Student() {
         );
       }) : null}
     </div>
-    // </Link>
   );
 }
 
