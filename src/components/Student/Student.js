@@ -148,11 +148,11 @@ function Student() {
 
       {/* if alumni has not seen previous booking no one can book appointment */}
       
-      {!previous ? null : <p>Note :-  Not allowed because Alumni has not seen <strong style={{ color: "red" }}>Previous Appointment</strong></p>}
+      {!previous ? null : <p>Note :-  you can't Book because Alumni has not seen <strong style={{ color: "red" }}>Previous Appointment</strong></p>}
       
       {/* showing message for maximum booking */}
 
-      {!maxapp ? null : <p>Note :-  Not allowed because maximum Booking  allowed per user is <strong style={{ color: "red" }}>2</strong></p>}
+      {!maxapp ? null : <p>Note :-  you can't Book because maximum Booking  allowed per user is <strong style={{ color: "red" }}>2</strong></p>}
       <button disabled={(maxapp || previous)} style={{ width: "200px", height: "100%" }} onClick={click}>Book Appointment</button>
       <center>
         <h6 style={{ color: "red" }}>
