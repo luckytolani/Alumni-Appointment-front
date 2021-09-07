@@ -43,7 +43,7 @@ export default function LoginPage() {
     return (
          <div style={{ textAlign: "center" }}>
             { loading?<Preloader/>:<div>
-                <h1>Welcome to Alumni Appointment App</h1>
+                <h1>Welcome to Appointment App</h1>
                 <h1>Login Page</h1>
                 <form>
                     <div className="container">
