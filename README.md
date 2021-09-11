@@ -12,3 +12,28 @@ simple student-alumni scheduling website, with the below functionalities.
 4) Once the alumni confirms, both the students can continue to book other slots
 
 5) The maximum number of slots a student can book is 2.
+
+
+
+
+
+please use the following username and passwords for login in the app:-
+
+for alumni [
+username:-    alumni
+password:-     alumni
+] 
+
+for Student 1 [
+username:-    student1
+password:-     student1
+] 
+
+for Student 2 [
+username:-    student2
+password:-     student2
+] 
+
+App Link:- https://alumniappointment.netlify.app/#/
+Backend Code Link:- https://github.com/luckytolani/Alumni-Appointment-API
+Frontend Code Link:- https://github.com/luckytolani/Alumni-Appointment-front
